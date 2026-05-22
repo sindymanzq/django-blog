@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 import os
 
 # 安全密钥从环境变量读取（不要硬编码在代码中）
@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "开发环境默认密钥")
 # DEBUG 通过环境变量控制
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 # 允许访问的主机名
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 # 静态文件收集目录
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # 项目根目录下的 staticfiles/
 STATIC_URL = "/static/"
@@ -85,13 +85,19 @@ WSGI_APPLICATION = "blog_project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+import dj_database_url
 
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"), conn_max_age=600
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
