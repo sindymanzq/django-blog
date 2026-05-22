@@ -1,0 +1,28 @@
+{% extends 'blog/base.html' %}
+{% block title %}
+  {{ post.title }} - Test 博客
+{% endblock %}
+{% block content %}
+  <article class="post-view">
+    <span class="category-tag">{{ post.category.name }}</span>
+    <div class="post-header">
+      <h1>{{ post.title }}</h1>
+      <!-- 收藏按钮：仅登录用户可见 -->
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'toggle_favorite' post.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="fav-btn">
+            {% if user in post.favorites.all %}
+              &#x2665; 已收藏
+            {% else %}
+              ♡ 收藏
+            {% endif %}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+    <time>{{ post.created_at|date:'Y-m-d' }}</time>
+    <div class="content">{{ post.content|safe }}</div>
+    <a href="{% url 'index' %}" class="back-link">← 返回首页</a>
+  </article>
+{% endblock %}

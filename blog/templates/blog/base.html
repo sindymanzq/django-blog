@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Test 博客
+      {% endblock %}
+    </title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+      }
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 40px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .navbar .logo {
+        font-size: 22px;
+        font-weight: bold;
+        color: #2c3e50;
+        text-decoration: none;
+      }
+      .navbar a {
+        margin-left: 20px;
+        text-decoration: none;
+        color: #333;
+      }
+      .container {
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+        border-top: 1px solid #eee;
+      }
+      .section-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      /* 文章卡片网格布局 */
+      .article-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+      }
+      .article-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .article-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+      .card-content {
+        padding: 20px;
+      }
+      .card-category {
+        display: inline-block;
+        padding: 2px 10px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+      .article-card h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: #222;
+      }
+      .article-card p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+      .card-date {
+        font-size: 12px;
+        color: #999;
+      }
+      .empty-tip {
+        text-align: center;
+        color: #999;
+        padding: 60px 0;
+        font-size: 16px;
+      }
+      .post-view {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .category-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 12px;
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      .post-view h1 {
+        font-size: 32px;
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+      .post-view time {
+        display: block;
+        color: #999;
+        font-size: 14px;
+        margin-bottom: 30px;
+      }
+      .content {
+        line-height: 1.8;
+        font-size: 16px;
+        color: #333;
+      }
+      .content h2 {
+        margin: 24px 0 12px;
+        font-size: 22px;
+      }
+      .content p {
+        margin-bottom: 12px;
+      }
+      .back-link {
+        display: inline-block;
+        margin-top: 40px;
+        color: #2c3e50;
+        text-decoration: none;
+      }
+      .search-bar {
+        margin-bottom: 20px;
+      }
+      .search-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-input:focus {
+        border-color: #2c3e50;
+      }
+      .clear-btn {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        text-decoration: none;
+        font-size: 18px;
+      }
+      .category-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .category-bar a {
+        padding: 6px 16px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .category-bar a.active {
+        background: #2c3e50;
+        color: #fff;
+        border-color: #2c3e50;
+      }
+      .category-bar a:hover {
+        border-color: #2c3e50;
+      }
+      .result-info {
+        color: #999;
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+      .card-link {
+        text-decoration: none;
+        color: inherit;
+      }
+      .auth-form {
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      }
+      .auth-form h2 {
+        margin-bottom: 24px;
+        text-align: center;
+      }
+      .auth-form .form-group {
+        margin-bottom: 16px;
+      }
+      .auth-form label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+      .auth-form input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: #2c3e50;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .error-msg {
+        color: #e74c3c;
+        font-size: 14px;
+      }
+      .form-footer {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 14px;
+      }
+      .user-name {
+        color: #2c3e50;
+        font-weight: 500;
+      }
+      .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .fav-btn,
+      .fav-btn-small {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #e74c3c;
+        padding: 4px 8px;
+        transition: transform 0.2s;
+      }
+      .fav-btn:hover,
+      .fav-btn-small:hover {
+        transform: scale(1.2);
+      }
+      .fav-btn-small {
+        font-size: 16px;
+      }
+      .fav-form {
+        display: inline;
+      }
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+    </style>
+    {% block extra_head %}
+
+    {% endblock %}
+  </head>
+  <body>
+    <!-- 导航栏 -->
+    <header class="navbar">
+      <a href="/" class="logo">Test 博客</a>
+      <nav>
+        <a href="/">首页</a>
+        {% if user.is_authenticated %}
+          {# 已登录：显示用户名和登出按钮（user 是 Django 自动注入的） #}
+          <span class="user-name">{{ user.username }}</span>
+          {% comment %} <a href="{% url 'logout' %}">登出</a> {% endcomment %}
+          <!-- 退出登录，Django官方标准用法 -->
+          <form action="{% url 'logout' %}" method="post" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" style="border:none;background:none;color:blue;cursor:pointer;">登出</button>
+          </form>
+        {% else %}
+          {# 未登录：显示登录和注册链接 #}
+          <a href="{% url 'login' %}">登录</a>
+          <a href="{% url 'register' %}">注册</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <!-- 主内容区（子模板填充） -->
+    <main class="container">
+      {% block content %}
+
+      {% endblock %}
+    </main>
+    <!-- 页脚 -->
+    <footer class="footer">
+      <p>© 2026 Test 博客</p>
+    </footer>
+  </body>
+</html>
